@@ -1,0 +1,46 @@
+.document {
+  &__container {
+    border: 1px solid #DFE4EF;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  &__button {
+    width: 22px;
+    height: 22px;
+  }
+
+  &__label {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__badges {
+    display: flex;
+    gap: 6px;
+  }
+
+  &__required {
+    font-weight: 400;
+    font-size: 11px;
+    color: #FF238D;
+  }
+
+  &__description {
+    flex-grow: 1;
+    font-size: 11px;
+    font-weight: 400;
+    color: #8E9CBB;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 21px;
+  }
+
+  &--dragging {
+    opacity: .5;
+  }
+}

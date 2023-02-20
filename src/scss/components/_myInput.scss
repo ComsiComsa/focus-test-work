@@ -1,0 +1,47 @@
+.input__container {
+  position: relative;
+  display: inline-block;
+  width: min(550px, 100%);
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: 45%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+
+    background-image: url('icons/search.svg');
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+
+  & input {
+    border: none;
+    width: 100%;
+    border-bottom: 1px solid #BFC9E0;
+    transition: all .1s;
+    padding: 12px 12px 12px 26px;
+
+    font-weight: 400;
+    font-size: 15px;
+
+    &:focus-visible {
+      outline: none;
+      border-bottom: 1px solid #0066FF;
+    }
+
+    &::placeholder {
+      font-style: italic;
+    }
+  }
+}
+
+.input__button {
+  cursor: pointer;
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  right: 0;
+}

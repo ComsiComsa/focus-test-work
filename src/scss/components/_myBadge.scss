@@ -1,0 +1,26 @@
+.badge {
+  content: 'a';
+  width: 8px;
+  height: 8px;
+  border-radius: 50px;
+
+  &--pink {
+    background: #FF238D;
+  }
+
+  &--yellow {
+    background: #FFB800;
+  }
+
+  &--orange {
+    background: #FF8D23;
+  }
+
+  &--blue {
+    background: #00C2FF;
+  }
+
+  &--grey {
+    background: #8E9CBB;
+  }
+}
