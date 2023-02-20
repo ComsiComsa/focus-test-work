@@ -7,7 +7,7 @@
             v-if="icon"
             class="button__icon"
             :class="{ 'rotate': rotate }"
-            :src="`icons/${icon}`"
+            :src="`/public/icons/${icon}`"
             alt="icon"
         >
 
