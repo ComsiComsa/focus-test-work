@@ -8,7 +8,7 @@
         <img
             v-if="modelValue.length"
             class="input__button"
-            src="/public/icons/close.svg"
+            src="/icons/close.svg"
             alt="del"
             @click="$emit('update:modelValue', '')"
         >
