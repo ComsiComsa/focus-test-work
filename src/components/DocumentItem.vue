@@ -6,9 +6,6 @@
             height: height + 'px',
             marginLeft: sizeMarginLeft + 'px'
         }"
-        draggable="true"
-        @dragstart="onDragStart(document.id, $event)"
-        @dragend="onDragEnd($event)"
     >
         <div
             v-if="document.type !== 'document'"
@@ -96,29 +93,11 @@ export default {
     setup(props) {
         const height = ref(props.document.type === 'document' ? 35 : 48);
         const sizeMarginLeft = ref(props.marginLeft ? 16 : 0);
-        const documentRef = ref(null);
-
-        const onDragStart = (id, event) => {
-            event.dataTransfer.setData('text/plain', id);
-            event.target.classList.add('document--dragging');
-        };
-
-        const onDragEnd = (event) => {
-            event.dataTransfer.clearData();
-            event.target.classList.remove('document--dragging');
-        };
 
         return {
             height,
-            documentRef,
             sizeMarginLeft,
-            onDragStart,
-            onDragEnd,
         };
     },
 };
 </script>
-
-<style scoped>
-
-</style>

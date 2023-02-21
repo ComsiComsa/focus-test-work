@@ -6,23 +6,61 @@
             class="documents__item"
             :class="{ 'documents__item--last': category.type === 'global-category' }"
         >
-            <MyAccordion v-model="category.model">
+            <MyAccordion
+                v-model="category.model"
+            >
                 <template #header>
                     <DocumentItem
                         v-if="category.type !== 'global-category'"
                         v-model="category.model"
+                        :class="{
+                            'document__container--insert': dragOverObjectID === category.id
+                                && availableInserts.indexOf(category.id) > -1
+                        }"
                         :document="category"
+                        draggable="true"
                         @toggle-accordion="category.model = !category.model"
+                        @dragstart="onDragStart(category, $event)"
+                        @dragend="onDragEnd($event)"
+                        @dragover.prevent="onDragEnter(category.id)"
+                        @dragleave.prevent="onDragLeave(category.id)"
+                        @drop="onDrop(category)"
                     />
+
+                    <div
+                        v-else-if="!category.documents.length"
+                        style="padding: 16px; text-align: center;"
+                        :class="{
+                            'document__container--insert': dragOverObjectID === category.id
+                                && availableInserts.indexOf(category.id) > -1
+                        }"
+                        @dragstart="onDragStart(category, $event)"
+                        @dragend="onDragEnd($event)"
+                        @dragover.prevent="onDragEnter(category.id)"
+                        @dragleave.prevent="onDragLeave(category.id)"
+                        @drop="onDrop(category)"
+                    >
+                        Документы без категории
+                    </div>
                 </template>
 
                 <template #section>
                     <DocumentItem
                         v-for="document in category.documents"
                         :key="document.id"
+                        :class="{
+                            'document__container--insert': dragOverObjectID === document.id
+                                && availableInserts.indexOf(document.id) > -1
+                        }"
                         :document="document"
                         :margin-left="document.type === 'document'
                             && category.type !== 'global-category'"
+                        draggable="true"
+                        @dragstart="onDragStart(document, $event)"
+                        @dragend="onDragEnd($event)"
+                        @dragover.prevent="onDragEnter(document.id)"
+                        @dragleave.prevent="onDragLeave(document.id)"
+                        @drop="onDrop(document)"
                     />
                 </template>
             </MyAccordion>
@@ -42,6 +80,9 @@ export default {
     },
     setup() {
         const store = ref(inject('filter'));
+        const availableInserts = ref([]);
+        const draggableObject = ref(null);
+        const dragOverObjectID = ref(null);
 
         const categories = ref([
             {
@@ -64,6 +105,14 @@ export default {
                         id: 'doc-2',
                         type: 'document',
                         label: 'ИНН',
+                        description: 'Для всех',
+                        badges: [],
+                        required: true,
+                    },
+                    {
+                        id: 'doc-6',
+                        type: 'document',
+                        label: 'СНИЛС',
                         description: 'Для всех',
                         badges: [],
                         required: true,
@@ -162,10 +211,112 @@ export default {
             filterCategories();
         });
 
+        const onDragStart = (obj, event) => {
+            availableInserts.value = [];
+
+            if (obj.type === 'category') {
+                filteredCategories.value.forEach((cat) => {
+                    if (cat.type !== 'global-category' && cat.id !== obj.id) {
+                        availableInserts.value.push(cat.id);
+                    }
+                });
+            } else {
+                filteredCategories.value.forEach((cat) => {
+                    const objectIndex = cat.documents
+                        .findIndex((doc) => doc.id === obj.id);
+
+                    if (objectIndex !== -1) {
+                        if (objectIndex !== 0) {
+                            availableInserts.value.push(cat.id);
+                        }
+
+                        for (let i = 0; i < cat.documents.length; i++) {
+                            if (i === objectIndex || i === objectIndex - 1) {
+                                continue;
+                            }
+
+                            availableInserts.value.push(cat.documents[i].id);
+                        }
+                    } else {
+                        availableInserts.value.push(
+                            ...[cat.id, ...cat.documents.map((doc) => doc.id)],
+                        );
+                    }
+                });
+            }
+
+            draggableObject.value = obj;
+            event.target.classList.add('document--dragging');
+        };
+
+        const onDragEnd = (event) => {
+            event.dataTransfer.clearData();
+            event.target.classList.remove('document--dragging');
+            draggableObject.value = null;
+            dragOverObjectID.value = null;
+            availableInserts.value = [];
+        };
+
+        const checkIfAbleToDrop = (doc) => {
+            return doc.id === dragOverObjectID.value;
+        };
+
+        const onDragEnter = (id) => {
+            dragOverObjectID.value = id;
+        };
+
+        const onDragLeave = () => {
+            dragOverObjectID.value = null;
+        };
+
+        const onDrop = (target) => {
+            const { id: targetId, type: targetType } = target;
+            const { id: draggableId, type: draggableType } = draggableObject.value;
+
+            if (!availableInserts.value.includes(targetId)) {
+                return;
+            }
+
+            const filteredCategoriesValue = categories.value;
+            const currentIndex = filteredCategoriesValue.findIndex((cat) => cat.id === draggableId);
+            let targetIndex = filteredCategoriesValue.findIndex((cat) => cat.id === targetId);
+
+            if (draggableType === 'category') {
+                filteredCategoriesValue.splice(
+                    currentIndex > targetIndex ? targetIndex + 1 : targetIndex,
+                    0,
+                    ...filteredCategoriesValue.splice(currentIndex, 1),
+                );
+            } else {
+                const mainCategory = filteredCategoriesValue.find((cat) => cat.documents.findIndex((doc) => doc.id === draggableId) > -1);
+                const draggableIndex = mainCategory.documents.findIndex((doc) => doc.id === draggableId);
+                mainCategory.documents.splice(draggableIndex, 1);
+
+                if (['category', 'global-category'].includes(targetType)) {
+                    const category = filteredCategoriesValue.find((cat) => cat.id === targetId);
+                    category.documents.unshift(draggableObject.value);
+                } else {
+                    const category = filteredCategoriesValue.find((cat) => cat.documents.findIndex((doc) => doc.id === targetId) > -1);
+                    targetIndex = category.documents.findIndex((doc) => doc.id === targetId);
+                    category.documents.splice(targetIndex + 1, 0, draggableObject.value);
+                }
+            }
+
+            filterCategories();
+        };
+
         return {
+            availableInserts,
+            dragOverObjectID,
             categories,
             filteredCategories,
             store,
+            checkIfAbleToDrop,
+            onDragStart,
+            onDragEnd,
+            onDragEnter,
+            onDragLeave,
+            onDrop,
         };
     },
 };

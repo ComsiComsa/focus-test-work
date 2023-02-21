@@ -5,6 +5,10 @@
     display: flex;
     align-items: center;
     gap: 15px;
+
+    &--insert {
+      border-bottom: 3px solid #0066FF;
+    }
   }
 
   &__button {

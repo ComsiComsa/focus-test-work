@@ -1,5 +1,3 @@
-@import 'abstracts/variables';
-
 @import 'base/base';
 
 @import 'components/documentsList';
@@ -11,3 +9,11 @@
 
 @import 'layout/header';
 @import 'layout/page';
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('../assets/fonts/FiraSans-Medium.ttf') format('truetype'),
+       url('../assets/fonts/FiraSans-MediumItalic.ttf') format('truetype'),
+       url('../assets/fonts/FiraSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+}

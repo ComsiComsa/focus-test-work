@@ -23,6 +23,7 @@ module.exports = {
     'max-len': 'off',
     'arrow-body-style': 'off',
     'no-plusplus': 'off',
-    'no-param-reassign': 'off'
+    'no-param-reassign': 'off',
+    'no-continue': 'off'
   },
 };
