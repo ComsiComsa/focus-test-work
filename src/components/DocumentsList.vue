@@ -25,6 +25,7 @@
                         @dragend="onDragEnd($event)"
                         @dragover.prevent="onDragEnter(category.id)"
                         @dragleave.prevent="onDragLeave(category.id)"
+                        @drag="onDrag($event)"
                         @drop="onDrop(category)"
                     />
 
@@ -39,6 +40,7 @@
                         @dragend="onDragEnd($event)"
                         @dragover.prevent="onDragEnter(category.id)"
                         @dragleave.prevent="onDragLeave(category.id)"
+                        @drag="onDrag($event)"
                         @drop="onDrop(category)"
                     >
                         Документы без категории
@@ -62,6 +64,7 @@
                         @dragend="onDragEnd($event)"
                         @dragover.prevent="onDragEnter(document.id)"
                         @dragleave.prevent="onDragLeave(document.id)"
+                        @drag="onDrag($event)"
                         @drop="onDrop(document)"
                     />
                 </template>
@@ -223,6 +226,36 @@ export default {
             return parentElement;
         };
 
+        const makeCloneDragObject = (elem, event) => {
+            const cloneElement = elem.cloneNode(true);
+            cloneElement.style.left = `${event.pageX}px`;
+            cloneElement.style.top = `${event.pageY}px`;
+            cloneElement.style.opacity = 1;
+            cloneElement.id = 'cloneDraggable';
+            cloneElement.classList.add('document__container--shadow-clone');
+            document.body.appendChild(cloneElement);
+        };
+
+        const removeCloneObject = () => {
+            const elementToRemove = document.getElementById('cloneDraggable');
+
+            if (elementToRemove) {
+                elementToRemove.parentNode.removeChild(elementToRemove);
+            }
+        };
+
+        const onDrag = (event) => {
+            const draggableClone = document.getElementById('cloneDraggable');
+
+            if (draggableClone) {
+                draggableClone.style.left = `${event.pageX - draggableClone.offsetWidth}px`;
+                draggableClone.style.top = `${event.pageY}px`;
+            } else {
+                const parentElement = findParentElement(event);
+                makeCloneDragObject(parentElement, event);
+            }
+        };
+
         const onDragStart = (obj, event) => {
             if (event.target.parentNode.id !== 'drag') {
                 event.preventDefault();
@@ -264,12 +297,13 @@ export default {
 
             draggableObject.value = obj;
             const parentElement = findParentElement(event);
-            event.dataTransfer.setDragImage(parentElement, parentElement.offsetWidth, 0);
+            event.dataTransfer.setDragImage(new Image(), 0, 0);
             parentElement.classList.add('document--dragging');
         };
 
         const onDragEnd = (event) => {
             event.dataTransfer.clearData();
+            removeCloneObject();
             const parentElement = findParentElement(event);
             parentElement.classList.remove('document--dragging');
             draggableObject.value = null;
@@ -333,6 +367,7 @@ export default {
             store,
             draggableObject,
             checkIfAbleToDrop,
+            onDrag,
             onDragStart,
             onDragEnd,
             onDragEnter,

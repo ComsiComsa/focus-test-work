@@ -9,6 +9,13 @@
     &--insert {
       border-bottom: var(--border-blue-large);
     }
+
+    &--shadow-clone {
+      position: fixed;
+      opacity: 1;
+      background-color: var(--color-white);
+      box-shadow: var(--box-shadow-blue);
+    }
   }
 
   &__button {
