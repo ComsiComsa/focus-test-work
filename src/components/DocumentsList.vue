@@ -9,6 +9,7 @@
             <MyAccordion
                 v-model="category.model"
             >
+                <button />
                 <template #header>
                     <DocumentItem
                         v-if="category.type !== 'global-category'"
@@ -50,7 +51,8 @@
                         :key="document.id"
                         :class="{
                             'document__container--insert': dragOverObjectID === document.id
-                                && availableInserts.indexOf(document.id) > -1
+                                && availableInserts.indexOf(document.id) > -1,
+                            'document--dragging': draggableObject?.id === category.id
                         }"
                         :document="document"
                         :margin-left="document.type === 'document'
@@ -211,7 +213,22 @@ export default {
             filterCategories();
         });
 
+        const findParentElement = (elem) => {
+            let parentElement = elem.target.parentNode;
+
+            while (parentElement.id !== 'mainContainer') {
+                parentElement = parentElement.parentNode;
+            }
+
+            return parentElement;
+        };
+
         const onDragStart = (obj, event) => {
+            if (event.target.parentNode.id !== 'drag') {
+                event.preventDefault();
+                return false;
+            }
+
             availableInserts.value = [];
 
             if (obj.type === 'category') {
@@ -246,12 +263,15 @@ export default {
             }
 
             draggableObject.value = obj;
-            event.target.classList.add('document--dragging');
+            const parentElement = findParentElement(event);
+            event.dataTransfer.setDragImage(parentElement, parentElement.offsetWidth, 0);
+            parentElement.classList.add('document--dragging');
         };
 
         const onDragEnd = (event) => {
             event.dataTransfer.clearData();
-            event.target.classList.remove('document--dragging');
+            const parentElement = findParentElement(event);
+            parentElement.classList.remove('document--dragging');
             draggableObject.value = null;
             dragOverObjectID.value = null;
             availableInserts.value = [];
@@ -311,6 +331,7 @@ export default {
             categories,
             filteredCategories,
             store,
+            draggableObject,
             checkIfAbleToDrop,
             onDragStart,
             onDragEnd,

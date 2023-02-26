@@ -20,7 +20,7 @@
   & input {
     border: none;
     width: 100%;
-    border-bottom: 1px solid #BFC9E0;
+    border-bottom: var(--border-light-grey);
     transition: all .1s;
     padding: 12px 12px 12px 26px;
 
@@ -29,7 +29,7 @@
 
     &:focus-visible {
       outline: none;
-      border-bottom: 1px solid #0066FF;
+      border-bottom: var(--border-blue-small);
     }
 
     &::placeholder {

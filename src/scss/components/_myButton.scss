@@ -1,15 +1,17 @@
 .button {
-  cursor: pointer;
-  border: 1px solid #D3D8DF;
-  border-radius: 50px;
-  background-color: #ffffff;
+  &, &:link, &:visited {
+    cursor: pointer;
+    border: var(--border-grey);
+    border-radius: 50px;
+    background-color: var(--color-white);
 
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 8px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 10px;
 
-  transition: all .2s;
+    transition: all .2s;
+  }
 
   &__icon {
     transition: all .5s;
@@ -33,13 +35,17 @@
     border: none;
   }
 
-  &:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
-    transform: translateY(-1px);
+  &--sm {
+    padding: 7.7px 6px;
   }
 
-  &:active, &:focus {
-    box-shadow: 0 1px 20px rgba(0, 0, 0, .15);
-    transform: translateY(0);
+  &:hover {
+    box-shadow: var(--box-shadow-black-large);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    box-shadow: var(--box-shadow-black-small);
+    transform: translateY(-1px);
   }
 }

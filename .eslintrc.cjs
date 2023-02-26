@@ -24,6 +24,7 @@ module.exports = {
     'arrow-body-style': 'off',
     'no-plusplus': 'off',
     'no-param-reassign': 'off',
-    'no-continue': 'off'
+    'no-continue': 'off',
+    'consistent-return': 'off',
   },
 };

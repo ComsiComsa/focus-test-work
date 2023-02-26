@@ -1,13 +1,13 @@
 .document {
   &__container {
-    border: 1px solid #DFE4EF;
+    border: var(--border-white);
     padding: 13px 16px;
     display: flex;
     align-items: center;
     gap: 15px;
 
     &--insert {
-      border-bottom: 3px solid #0066FF;
+      border-bottom: var(--border-blue-large);
     }
   }
 
@@ -17,6 +17,7 @@
   }
 
   &__label {
+    white-space: nowrap;
     font-size: 15px;
     font-weight: 500;
   }
@@ -29,14 +30,17 @@
   &__required {
     font-weight: 400;
     font-size: 11px;
-    color: #FF238D;
+    color: var(--color-pink);
   }
 
   &__description {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     flex-grow: 1;
     font-size: 11px;
     font-weight: 400;
-    color: #8E9CBB;
+    color: var(--color-grey);
   }
 
   &__actions {

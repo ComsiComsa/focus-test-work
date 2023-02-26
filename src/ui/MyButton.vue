@@ -1,7 +1,11 @@
 <template>
     <button
         class="button"
-        :class="{ 'button--gap': ifGapNeeded, 'button--flat': flat }"
+        :class="{
+            'button--gap': ifGapNeeded,
+            'button--flat': flat,
+            [className]: className
+        }"
     >
         <img
             v-if="icon"
@@ -40,6 +44,10 @@ export default {
         rotate: {
             type: Boolean,
             default: false,
+        },
+        className: {
+            type: String,
+            default: '',
         },
     },
     setup(props) {

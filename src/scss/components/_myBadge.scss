@@ -1,26 +1,25 @@
 .badge {
-  content: 'a';
   width: 8px;
   height: 8px;
   border-radius: 50px;
 
   &--pink {
-    background: #FF238D;
+    background: var(--color-pink);
   }
 
   &--yellow {
-    background: #FFB800;
+    background: var(--color-yellow);
   }
 
   &--orange {
-    background: #FF8D23;
+    background: var(--color-orange);
   }
 
   &--blue {
-    background: #00C2FF;
+    background: var(--color-blue);
   }
 
   &--grey {
-    background: #8E9CBB;
+    background: var(--color-grey);
   }
 }

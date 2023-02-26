@@ -1,6 +1,6 @@
 <template>
     <div
-        ref="documentRef"
+        id="mainContainer"
         class="document__container"
         :style="{
             height: height + 'px',
@@ -13,6 +13,7 @@
         >
             <MyButton
                 icon="chevron.svg"
+                class-name="button--sm"
                 :disabled="document.type === 'category'
                     && document.documents && !document.documents.length"
                 :rotate="modelValue"
@@ -58,6 +59,7 @@
                 alt="delete"
             />
             <MyButton
+                id="drag"
                 icon="move.svg"
                 :flat="true"
                 alt="move"
