@@ -72,7 +72,6 @@
         </div>
     </div>
 </template>
-
 <script>
 import { ref, inject, watch } from 'vue';
 import MyAccordion from '../ui/MyAccordion.vue';
@@ -88,7 +87,6 @@ export default {
         const availableInserts = ref([]);
         const draggableObject = ref(null);
         const dragOverObjectID = ref(null);
-
         const categories = ref([
             {
                 id: 'cat-1',
@@ -179,91 +177,71 @@ export default {
                 ],
             },
         ]);
-
         const filteredCategories = ref(JSON.parse(JSON.stringify(categories.value)));
-
         const filterArray = (arr) => {
             return arr.filter((el) => el.label.toLowerCase().includes(store.value.filter.toLowerCase()));
         };
-
         const filterCategories = () => {
             let rawCategories = JSON.parse(JSON.stringify(categories.value));
-
             if (store.value.filter) {
                 for (let i = 0; i < rawCategories.length; i++) {
                     rawCategories[i].documents = filterArray(rawCategories[i].documents);
                 }
-
                 rawCategories = rawCategories.filter((cat) => {
                     const checked = cat.label.toLowerCase().includes(store.value.filter.toLowerCase());
-
                     return checked || cat.documents.length > 0;
                 });
             }
-
             filteredCategories.value = rawCategories.map((category) => {
                 if (category.type === 'global-category') {
                     category.model = true;
                 } else {
                     category.model = filteredCategories.value.find((cat) => cat.id === category.id)?.model || false;
                 }
-
                 return category;
             });
         };
-
         watch(store.value, () => {
             filterCategories();
         });
-
         const findParentElement = (elem) => {
             let parentElement = elem.target.parentNode;
-
             while (parentElement.id !== 'mainContainer') {
                 parentElement = parentElement.parentNode;
             }
-
             return parentElement;
         };
-
         const makeCloneDragObject = (elem, event) => {
             const cloneElement = elem.cloneNode(true);
-            cloneElement.style.left = `${event.pageX}px`;
-            cloneElement.style.top = `${event.pageY}px`;
+            cloneElement.style.left = `${event.pageX - 5}px`;
+            cloneElement.style.top = `${event.pageY + 5}px`;
             cloneElement.style.opacity = 1;
             cloneElement.id = 'cloneDraggable';
             cloneElement.classList.add('document__container--shadow-clone');
             document.body.appendChild(cloneElement);
         };
-
         const removeCloneObject = () => {
             const elementToRemove = document.getElementById('cloneDraggable');
-
             if (elementToRemove) {
                 elementToRemove.parentNode.removeChild(elementToRemove);
             }
         };
-
         const onDrag = (event) => {
             const draggableClone = document.getElementById('cloneDraggable');
-
             if (draggableClone) {
-                draggableClone.style.left = `${event.pageX - draggableClone.offsetWidth}px`;
-                draggableClone.style.top = `${event.pageY}px`;
+                draggableClone.style.left = `${event.pageX - draggableClone.offsetWidth - 5}px`;
+                draggableClone.style.top = `${event.pageY + 5}px`;
             } else {
                 const parentElement = findParentElement(event);
                 makeCloneDragObject(parentElement, event);
             }
         };
-
         const onDragStart = (obj, event) => {
             if (event.target.parentNode.id !== 'drag') {
                 event.preventDefault();
                 return false;
             }
-
             availableInserts.value = [];
-
             if (obj.type === 'category') {
                 filteredCategories.value.forEach((cat) => {
                     if (cat.type !== 'global-category' && cat.id !== obj.id) {
@@ -274,17 +252,14 @@ export default {
                 filteredCategories.value.forEach((cat) => {
                     const objectIndex = cat.documents
                         .findIndex((doc) => doc.id === obj.id);
-
                     if (objectIndex !== -1) {
                         if (objectIndex !== 0) {
                             availableInserts.value.push(cat.id);
                         }
-
                         for (let i = 0; i < cat.documents.length; i++) {
                             if (i === objectIndex || i === objectIndex - 1) {
                                 continue;
                             }
-
                             availableInserts.value.push(cat.documents[i].id);
                         }
                     } else {
@@ -294,13 +269,11 @@ export default {
                     }
                 });
             }
-
             draggableObject.value = obj;
             const parentElement = findParentElement(event);
             event.dataTransfer.setDragImage(new Image(), 0, 0);
             parentElement.classList.add('document--dragging');
         };
-
         const onDragEnd = (event) => {
             event.dataTransfer.clearData();
             removeCloneObject();
@@ -310,31 +283,24 @@ export default {
             dragOverObjectID.value = null;
             availableInserts.value = [];
         };
-
         const checkIfAbleToDrop = (doc) => {
             return doc.id === dragOverObjectID.value;
         };
-
         const onDragEnter = (id) => {
             dragOverObjectID.value = id;
         };
-
         const onDragLeave = () => {
             dragOverObjectID.value = null;
         };
-
         const onDrop = (target) => {
             const { id: targetId, type: targetType } = target;
             const { id: draggableId, type: draggableType } = draggableObject.value;
-
             if (!availableInserts.value.includes(targetId)) {
                 return;
             }
-
             const filteredCategoriesValue = categories.value;
             const currentIndex = filteredCategoriesValue.findIndex((cat) => cat.id === draggableId);
             let targetIndex = filteredCategoriesValue.findIndex((cat) => cat.id === targetId);
-
             if (draggableType === 'category') {
                 filteredCategoriesValue.splice(
                     currentIndex > targetIndex ? targetIndex + 1 : targetIndex,
@@ -345,7 +311,6 @@ export default {
                 const mainCategory = filteredCategoriesValue.find((cat) => cat.documents.findIndex((doc) => doc.id === draggableId) > -1);
                 const draggableIndex = mainCategory.documents.findIndex((doc) => doc.id === draggableId);
                 mainCategory.documents.splice(draggableIndex, 1);
-
                 if (['category', 'global-category'].includes(targetType)) {
                     const category = filteredCategoriesValue.find((cat) => cat.id === targetId);
                     category.documents.unshift(draggableObject.value);
@@ -355,10 +320,8 @@ export default {
                     category.documents.splice(targetIndex + 1, 0, draggableObject.value);
                 }
             }
-
             filterCategories();
         };
-
         return {
             availableInserts,
             dragOverObjectID,

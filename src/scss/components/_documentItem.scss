@@ -11,7 +11,7 @@
     }
 
     &--shadow-clone {
-      position: fixed;
+      position: absolute;
       opacity: 1;
       background-color: var(--color-white);
       box-shadow: var(--box-shadow-blue);
